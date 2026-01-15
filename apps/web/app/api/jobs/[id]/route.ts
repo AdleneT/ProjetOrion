@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@repo/db';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
     try {

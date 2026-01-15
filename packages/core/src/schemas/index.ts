@@ -8,9 +8,13 @@ export const JobInputSchema = z.object({
         productUrl: z.string().url().optional(),
         price: z.string().optional(),
         usp: z.string().optional(),
-        tone: z.string().optional(),
-        duration: z.string().optional(),
+        keyBenefits: z.array(z.string()).optional(),
+        tone: z.enum(['authentique', 'fun', 'premium', 'sérieux', 'agressif-soft']).optional(),
+        duration: z.enum(['15', '30', '45']).optional(),
         language: z.string().default('fr'),
+        setting: z.string().optional(),
+        outfit: z.string().optional(),
+        script_mode: z.enum(['strict', 'natural', 'improvised']).default('natural'),
     }),
 });
 
@@ -39,6 +43,7 @@ export const CreativeDirectorOutputSchema = z.object({
             speaker: z.string(),
             text: z.string(),
             visual: z.string(),
+            audio_cue: z.string().optional(),
         })),
     })).length(3),
 });

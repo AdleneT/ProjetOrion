@@ -7,10 +7,14 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function JobDetailPage() {
     const params = useParams();
-    const { data: job, error, isLoading } = useSWR(params.id ? `/api/jobs/${params.id}` : null, fetcher, { refreshInterval: 2000 });
+    const { data: job, error, isLoading } = useSWR(params.id ? `/api/jobs/${params.id}` : null, fetcher, { refreshInterval: 5000 });
 
     if (error) return <div>Failed to load job</div>;
     if (isLoading) return <div>Loading...</div>;
+
+    // Find audio asset
+    const audioAsset = job.assets?.find((a: any) => a.type === 'audio');
+    const influencerName = job.influencerId ? job.influencerId : 'N/A'; // We might want to fetch influencer details or include them in API
 
     return (
         <div className="space-y-8">
@@ -18,6 +22,14 @@ export default function JobDetailPage() {
                 <div>
                     <h1 className="text-3xl font-bold mb-2">{job.input?.productName}</h1>
                     <p className="text-muted-foreground">Run ID: <span className="font-mono text-xs">{job.runId}</span></p>
+                    {job.influencerId && (
+                        <div className="mt-2 text-sm text-foreground flex items-center gap-2">
+                            <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs font-bold uppercase">Influencer</span>
+                            {/* We assume the API returns expanded influencer or we just show ID for now if not relation included */}
+                            {/* Ideally API should include: include: { influencer: true } */}
+                            {job.influencer?.name || job.influencerId}
+                        </div>
+                    )}
                 </div>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium 
             ${job.status === 'SUCCEEDED' ? 'bg-green-100 text-green-700' :
@@ -51,7 +63,7 @@ export default function JobDetailPage() {
 
                                     {/* Render step output if available/interesting */}
                                     {step.output && (
-                                        <div className="bg-muted/50 p-3 rounded-lg text-xs font-mono overflow-auto max-h-40">
+                                        <div className="bg-muted/50 p-3 rounded-lg text-xs font-mono overflow-auto max-h-40 w-full">
                                             <pre>{JSON.stringify(step.output, null, 2)}</pre>
                                         </div>
                                     )}
@@ -68,7 +80,21 @@ export default function JobDetailPage() {
                 {/* Assets / Details */}
                 <div className="space-y-6">
                     <h2 className="text-xl font-semibold">Assets</h2>
-                    <div className="bg-card border border-border rounded-xl p-6">
+                    <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+
+                        {/* Audio Player */}
+                        {audioAsset && (
+                            <div>
+                                <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                                    <span>🎵</span> Generated Audio
+                                </h3>
+                                <audio controls src={audioAsset.url} className="w-full" />
+                                <div className="text-xs text-muted-foreground mt-1">
+                                    Voice ID: {audioAsset.metadata?.voiceId}
+                                </div>
+                            </div>
+                        )}
+
                         {job.status === 'SUCCEEDED' ? (
                             <div className="space-y-4">
                                 <div className="aspect-video bg-black rounded-lg flex items-center justify-center text-white">
@@ -78,8 +104,8 @@ export default function JobDetailPage() {
                                 <button className="w-full bg-primary text-primary-foreground py-2 rounded-lg">Download Video</button>
                             </div>
                         ) : (
-                            <div className="text-center py-12 text-muted-foreground">
-                                Video will appear here when ready.
+                            <div className="text-center py-12 text-muted-foreground text-sm">
+                                Video generation pending...
                             </div>
                         )}
                     </div>

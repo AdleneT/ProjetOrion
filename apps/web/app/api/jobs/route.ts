@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, JobStatus, Platform } from '@repo/db';
+import { JobStatus, Platform } from '@repo/db';
 import { JobInputSchema } from '@repo/core';
 import { jobQueue } from '@/lib/queue';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 export async function POST(req: Request) {
     try {
@@ -32,7 +31,7 @@ export async function POST(req: Request) {
             runId: job.runId,
         });
 
-        return NextResponse.json({ jobId: job.id, runId: job.runId, status: 'QUEUED' });
+        return NextResponse.json({ jobId: job.id, runId: job.runId, status: 'QUEUED' }, { status: 201 });
 
     } catch (error) {
         console.error('Error creating job:', error);

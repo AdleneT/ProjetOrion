@@ -6,7 +6,7 @@ import { JobCard } from '@/components/JobCard';
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function DashboardPage() {
-    const { data, error, isLoading } = useSWR('/api/jobs', fetcher, { refreshInterval: 5000 });
+    const { data, error, isLoading } = useSWR('/api/jobs', fetcher, { refreshInterval: 10000 });
 
     if (error) return <div>Failed to load jobs</div>;
     if (isLoading) return <div>Loading...</div>;

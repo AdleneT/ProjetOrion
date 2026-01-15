@@ -21,6 +21,7 @@ export default function RootLayout({
                 <main className="min-h-screen bg-background">
                     {children}
                 </main>
+                <Toaster richColors />
             </body>
         </html>
     )

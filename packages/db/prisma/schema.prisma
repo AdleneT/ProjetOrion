@@ -62,19 +62,32 @@ model User {
   jobs          Job[]
 }
 
+model Influencer {
+  id                String   @id // e.g., "emma_ugc"
+  name              String
+  language          String
+  persona           Json // style, vocab, do/dont, pacing, energy, etc.
+  elevenlabsVoiceId String
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  jobs              Job[]
+}
+
 model Job {
-  id           String    @id @default(uuid())
+  id           String      @id @default(uuid())
   userId       String?
-  user         User?     @relation(fields: [userId], references: [id])
-  status       JobStatus @default(QUEUED)
+  user         User?       @relation(fields: [userId], references: [id])
+  status       JobStatus   @default(QUEUED)
   platform     Platform
-  input        Json      // Brief user
+  input        Json // Brief user
   influencerId String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  influencer   Influencer? @relation(fields: [influencerId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   startedAt    DateTime?
   finishedAt   DateTime?
-  runId        String    @unique @default(uuid())
+  runId        String      @unique @default(uuid())
   error        String?
 
   steps  JobStep[]

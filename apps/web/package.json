@@ -11,13 +11,16 @@
     "dependencies": {
         "@repo/core": "workspace:*",
         "@repo/db": "workspace:*",
+        "bullmq": "^4.18.3",
         "clsx": "^2.0.0",
         "date-fns": "^4.1.0",
         "framer-motion": "^10.16.4",
+        "ioredis": "^5.9.1",
         "lucide-react": "^0.292.0",
         "next": "14.0.0",
         "react": "^18",
         "react-dom": "^18",
+        "sonner": "^2.0.7",
         "swr": "^2.2.4",
         "tailwind-merge": "^2.0.0",
         "zod": "^3.22.4"

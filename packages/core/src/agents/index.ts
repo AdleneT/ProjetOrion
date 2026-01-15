@@ -1,65 +1,69 @@
+import { PrismaClient, AgentName } from '@repo/db';
 import { LLMProvider } from '../providers';
 import { ProductIntelOutputSchema, UGCStrategyOutputSchema, CreativeDirectorOutputSchema, HumanizeQAOutputSchema } from '../schemas';
 
-// Mock implementations for now to ensure type safety in the worker
-// In a real app, these would inject the LLMProvider and use the prompts from DB
+export const runProductIntel = async (llm: LLMProvider, input: any, prisma: PrismaClient, runId?: string, personaBlock?: string) => {
+    const promptRecord = await prisma.promptVersion.findFirst({
+        where: { agentName: AgentName.product_intel, isActive: true },
+        orderBy: { version: 'desc' }
+    });
+    if (!promptRecord) throw new Error("No active prompt for product_intel");
 
-export const runProductIntel = async (llm: LLMProvider, input: any) => {
-    // Mock return matching ProductIntelOutputSchema
-    return {
-        analysis: {
-            sellingPoints: ["Fast results", "Easy to use"],
-            targetAudience: ["Gen Z", "Young Adults"],
-            hooks: ["You won't believe this", "Game changer"],
-            painPoints: ["Slow alternatives", "Expensive options"]
-        },
-        valid: true
-    };
+    // Construct User Prompt (can be more sophisticated)
+    const userPrompt = `${personaBlock ? personaBlock + "\n\n" : ""}User Input:\n${JSON.stringify(input)}`;
+
+    return await llm.generateJson({
+        system: promptRecord.prompt,
+        user: userPrompt,
+        runId
+    }, ProductIntelOutputSchema);
 };
 
-export const runUGCStrategy = async (llm: LLMProvider, analysis: any) => {
-    return {
-        concepts: [
-            { title: "Concept 1", angle: "Humor", description: "Funny skit" },
-            { title: "Concept 2", angle: "Educational", description: "How-to guide" },
-            { title: "Concept 3", angle: "Testimonial", description: "User review" }
-        ]
-    };
+export const runUGCStrategy = async (llm: LLMProvider, analysis: any, prisma: PrismaClient, runId?: string, personaBlock?: string) => {
+    const promptRecord = await prisma.promptVersion.findFirst({
+        where: { agentName: AgentName.ugc_strategist, isActive: true },
+        orderBy: { version: 'desc' }
+    });
+    if (!promptRecord) throw new Error("No active prompt for ugc_strategist");
+
+    const userPrompt = `${personaBlock ? personaBlock + "\n\n" : ""}Analysis:\n${JSON.stringify(analysis)}`;
+
+    return await llm.generateJson({
+        system: promptRecord.prompt,
+        user: userPrompt,
+        runId
+    }, UGCStrategyOutputSchema);
 };
 
-export const runCreativeDirector = async (llm: LLMProvider, concepts: any) => {
-    return {
-        scripts: [
-            {
-                title: "Script 1",
-                content: [
-                    { speaker: "Host", text: "Hey guys!", visual: "Face to camera" },
-                    { speaker: "Host", text: "Check this out.", visual: "Product close up" }
-                ]
-            },
-            {
-                title: "Script 2",
-                content: [
-                    { speaker: "Host", text: "Stop scrolling!", visual: "Surprised face" },
-                    { speaker: "Host", text: "You need this.", visual: "Product demo" }
-                ]
-            },
-            {
-                title: "Script 3",
-                content: [
-                    { speaker: "Host", text: "Day in my life.", visual: "Vlog style" },
-                    { speaker: "Host", text: "Using this product.", visual: "Product usage" }
-                ]
-            }
-        ]
-    };
+export const runCreativeDirector = async (llm: LLMProvider, concepts: any, prisma: PrismaClient, runId?: string, personaBlock?: string) => {
+    const promptRecord = await prisma.promptVersion.findFirst({
+        where: { agentName: AgentName.creative_director, isActive: true },
+        orderBy: { version: 'desc' }
+    });
+    if (!promptRecord) throw new Error("No active prompt for creative_director");
+
+    const userPrompt = `${personaBlock ? personaBlock + "\n\n" : ""}Concepts:\n${JSON.stringify(concepts)}`;
+
+    return await llm.generateJson({
+        system: promptRecord.prompt,
+        user: userPrompt,
+        runId
+    }, CreativeDirectorOutputSchema);
 };
 
-export const runHumanizeQA = async (llm: LLMProvider, scripts: any) => {
-    return {
-        selectedScript: scripts.scripts[0],
-        score: 0.9,
-        improvements: ["Added more pauses", "More natural tone"],
-        finalScriptText: "Hey guys! Check this out. It's amazing."
-    };
+export const runHumanizeQA = async (llm: LLMProvider, scripts: any, prisma: PrismaClient, runId?: string, personaBlock?: string) => {
+    const promptRecord = await prisma.promptVersion.findFirst({
+        where: { agentName: AgentName.humanize_qa, isActive: true },
+        orderBy: { version: 'desc' }
+    });
+    if (!promptRecord) throw new Error("No active prompt for humanize_qa");
+
+    const userPrompt = `${personaBlock ? personaBlock + "\n\n" : ""}Scripts and Guidelines:\n${JSON.stringify(scripts)}`;
+
+    return await llm.generateJson({
+        system: promptRecord.prompt,
+        user: userPrompt,
+        runId
+    }, HumanizeQAOutputSchema);
 };
+
