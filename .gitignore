@@ -1,37 +1,37 @@
 # Dependencies
-node_modules
-.pnpm-store
+node_modules/
+.pnpm-store/
 
-# Production
-dist
-build
-.next
-out
-
-# Environment
+# Env files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.pem
+.env.*
+!.env.example
 
-# IDEs
-.vscode
-.idea
-*.sublime-workspace
-
-# OS
-.DS_Store
-Thumbs.db
+# Build / cache
+dist/
+build/
+.next/
+.out/
+coverage/
+.tmp/
+.cache/
 
 # Logs
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Prisma / DB
+*.db
+*.sqlite
+*.sqlite3
 
 # Docker
-postgres_data
-redis_data
-minio_data
+docker-data/
