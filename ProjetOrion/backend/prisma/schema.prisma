@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-py"
+  interface = "asyncio"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
+enum InvoiceStatus {
+  READY
+  NEEDS_FIX
+  ERROR
+}
+
+enum InvoiceType {
+  PDF
+  XML
+  CSV
+}
+
+enum PrestationType {
+  BIEN
+  SERVICE
+  MIXTE
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String // Hashed
+  plan          Plan           @default(FREE)
+  createdAt     DateTime       @default(now())
+  
+  folders       ClientFolder[]
+  logs          AuditLog[]
+  invoices      Invoice[]
+}
+
+model ClientFolder {
+  id        String    @id @default(uuid())
+  name      String
+  tags      String[]
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+}
+
+model Invoice {
+  id        String   @id @default(uuid())
+  
+  // Metadata
+  filename  String
+  status    InvoiceStatus @default(READY)
+  fileType  InvoiceType
+  
+  // Compliance Data
+  sirenEmetteur String?
+  sirenRecepteur String?
+  dateFacture   DateTime?
+  devise        String    @default("EUR")
+  montantHT     Float?
+  montantTVA    Float?
+  montantTTC    Float?
+  
+  // Business Logic
+  typePrestation PrestationType?
+  isEreporting   Boolean        @default(false)
+  isPaid         Boolean        @default(false)
+  
+  // Diagnostics
+  errors         Json?   // List of error strings or objects
+  
+  // Relations
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  folderId  String?
+  folder    ClientFolder? @relation(fields: [folderId], references: [id])
+  
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime @default(now())
+  action    String
+  details   String?
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}

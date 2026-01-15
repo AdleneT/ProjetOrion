@@ -1,0 +1,19 @@
+{
+  "name": "mock-saas-ugc",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "worker": "pnpm --filter worker start",
+    "build": "pnpm -r build",
+    "db:migrate": "pnpm --filter db migrate:dev",
+    "db:seed": "pnpm --filter db seed"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "turbo": "^1.10.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
